@@ -5,7 +5,9 @@ from PIL import Image
 
 @st.cache_resource("model")
 def load_model():
-    model = AutoModelForCausalLM.from_pretrained("captioning-model/")
+    model = AutoModelForCausalLM.from_pretrained("microsoft/git-base")
+    state_dict = torch.load("model_state_dict.pth", map_location="cuda" if torch.cuda.is_available() else "cpu")
+    model.load_state_dict(state_dict)
     processor = AutoProcessor.from_pretrained("microsoft/git-base")
     model.to("cuda" if torch.cuda.is_available() else "cpu")
     return model, processor
