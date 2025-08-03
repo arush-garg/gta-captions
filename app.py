@@ -2,18 +2,32 @@ import streamlit as st
 from transformers import AutoProcessor, AutoModelForCausalLM
 import torch
 from PIL import Image
+import os
+import requests
 
-@st.cache_resource("model")
+
 def load_model():
     model = AutoModelForCausalLM.from_pretrained("microsoft/git-base")
-    state_dict = torch.load("model_state_dict.pth", map_location="cuda" if torch.cuda.is_available() else "cpu")
+    if not os.path.exists(st.session_state.dict_path):
+        url = "https://your-download-link.com/captioning-model.pth"
+        response = requests.get(url, stream=True)
+        with open(st.session_state.dict_path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+
+    state_dict = torch.load(st.session_state.dict_path)
     model.load_state_dict(state_dict)
     processor = AutoProcessor.from_pretrained("microsoft/git-base")
     model.to("cuda" if torch.cuda.is_available() else "cpu")
     return model, processor
 
+
+if 'dict_path' not in st.session_state:
+    st.session_state.dict_path = "captioning-model.pth"
 if 'model' not in st.session_state:
     st.session_state.model, st.session_state.processor = load_model()
+
 
 st.title("GTA Scene Caption Generator")
 st.write("Upload an image of a GTA scene to generate a caption.")
