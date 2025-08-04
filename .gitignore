@@ -1,3 +1,5 @@
 .devcontainer/
 __pycache__/
 captioning-model.pth
+model.txt
+.env
