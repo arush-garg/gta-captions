@@ -25,9 +25,15 @@ def load_model():
                     if chunk:
                         f.write(chunk)
 
-    state_dict = torch.load(st.session_state.dict_path, map_location="cpu", weight_only=False)
-    model.load_state_dict(state_dict)
-    processor = AutoProcessor.from_pretrained("microsoft/git-base")
+    try:
+        state_dict = torch.load(st.session_state.dict_path, map_location="cpu", weights_only=False)
+        model.load_state_dict(state_dict)
+        processor = AutoProcessor.from_pretrained("microsoft/git-base")
+    except Exception as e:
+        st.error(f"Failed to load model weights. Please check the download link or the model file. Error: {e}")
+        os.remove(st.session_state.dict_path)
+        return None, None
+    
     if torch.cuda.is_available():
         model.to("cuda")
     elif torch.backends.mps.is_available():

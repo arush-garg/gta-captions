@@ -11,5 +11,5 @@ To test it out, click [here]()!
 1. `pip install -r requirements.txt`
 2. Create a `.env` file and add the download path to the model weights. I hosted them on pCloud (it is free and allows download using API, but you need to sign up)
 3. Run the app using `streamlit run app.py`
-
+<br><br>
 <i>In case you're wondering, I used SSH into Google Colab to train the model using GPU. Check out this [tutorial](https://www.youtube.com/watch?v=wvDFNQNgqS8) for how to do it (though you shouldn't do it on a Free account)</i>
