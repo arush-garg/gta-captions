@@ -18,7 +18,7 @@ def load_model():
                     raise ValueError("DOWNLOAD_LINK not set in .env file")
             except:
                 url = st.secrets['DOWNLOAD_LINK']
-
+            print(f"Downloading model weights from {url} to {st.session_state.dict_path}")
             response = requests.get(url, stream=True)
             with open(st.session_state.dict_path, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
