@@ -26,7 +26,7 @@ def load_model():
                         f.write(chunk)
 
     state_dict = torch.load(st.session_state.dict_path, map_location="cpu")
-    model.load_state_dict(state_dict)
+    model.load_state_dict(state_dict, weight_only=False)
     processor = AutoProcessor.from_pretrained("microsoft/git-base")
     if torch.cuda.is_available():
         model.to("cuda")
