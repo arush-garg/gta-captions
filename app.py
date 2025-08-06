@@ -58,15 +58,16 @@ with col1:
 
 with col2:
     st.write("Unsure? Click Generate Caption to try this example")
-    st.image("example/image.png", caption="Example Image", use_container_width=True)
+    st.image("example/image1.png", caption="Example Image", use_container_width=True)
 
 generate_button = st.button("Generate Caption")
 
 if generate_button:
     if uploaded_file is not None:
         image = Image.open(uploaded_file).convert("RGB")
+        st.image(image, caption="Uploaded Image", use_container_width=True)
     else:
-        image = Image.open("example/image.png").convert("RGB")
+        image = Image.open("example/image1.png").convert("RGB")
 
     inputs = st.session_state.processor(images=image, return_tensors="pt").to(st.session_state.model.device)
     
@@ -76,7 +77,8 @@ if generate_button:
             max_length=128,
             do_sample=True,
             top_p=0.5,
+            num_beams=3,
         )
 
     caption = st.session_state.processor.batch_decode(outputs, skip_special_tokens=True)[0]
-    st.write(f"**Generated Caption:** {caption}")
+    st.write(f"#### {caption}")
