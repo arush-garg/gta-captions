@@ -2,37 +2,12 @@ import streamlit as st
 from transformers import AutoProcessor, AutoModelForCausalLM
 import torch
 from PIL import Image
-import os
-import requests
-from dotenv import load_dotenv
 
 
 def load_model():
-    model = AutoModelForCausalLM.from_pretrained("microsoft/git-base")
-    if not os.path.exists(st.session_state.dict_path):
-        with st.spinner("Downloading model weights..."):
-            try:
-                load_dotenv()
-                url = os.getenv("DOWNLOAD_LINK")
-                if not url:
-                    raise ValueError("DOWNLOAD_LINK not set in .env file")
-            except:
-                url = st.secrets['DOWNLOAD_LINK']
-            print(f"Downloading model weights from {url} to {st.session_state.dict_path}")
-            response = requests.get(url, stream=True)
-            with open(st.session_state.dict_path, "wb") as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-
-    try:
-        state_dict = torch.load(st.session_state.dict_path, map_location="cpu", weights_only=False)
-        model.load_state_dict(state_dict)
+    with st.spinner("Loading model..."):
+        model = AutoModelForCausalLM.from_pretrained("Techno03/gta-captioner")
         processor = AutoProcessor.from_pretrained("microsoft/git-base")
-    except Exception as e:
-        st.error(f"Failed to load model weights. Please check the download link or the model file. Error: {e}")
-        os.remove(st.session_state.dict_path)
-        return None, None
     
     if torch.cuda.is_available():
         model.to("cuda")
@@ -41,9 +16,6 @@ def load_model():
     print(f"Model loaded on {model.device}")
     return model, processor
 
-
-if 'dict_path' not in st.session_state:
-    st.session_state.dict_path = "captioning-model.pth"
 if 'model' not in st.session_state:
     st.session_state.model, st.session_state.processor = load_model()
 
@@ -77,7 +49,7 @@ if generate_button:
             max_length=128,
             do_sample=True,
             top_p=0.5,
-            num_beams=3,
+            num_beams=3 if (torch.cuda.is_available() or torch.backends.mps.is_available()) else 1,
         )
 
     caption = st.session_state.processor.batch_decode(outputs, skip_special_tokens=True)[0]

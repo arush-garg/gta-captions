@@ -2,3 +2,4 @@
 __pycache__/
 captioning-model.pth
 model.txt
+gta-captioner/
