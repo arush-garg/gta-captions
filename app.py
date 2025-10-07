@@ -5,18 +5,15 @@ from PIL import Image
 
 
 def load_model():
+    device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     with st.spinner("Loading model..."):
         model = AutoModelForCausalLM.from_pretrained(
             "Techno03/gta-captioner",
-            low_cpu_mem_usage=False
+            device_map=device
         )
 
         processor = AutoProcessor.from_pretrained("microsoft/git-large")
     
-    if torch.cuda.is_available():
-        model.to("cuda")
-    elif torch.backends.mps.is_available():
-        model.to("mps")
     print(f"Model loaded on {model.device}")
     return model, processor
 
