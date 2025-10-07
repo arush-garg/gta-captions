@@ -9,7 +9,8 @@ def load_model():
     with st.spinner("Loading model..."):
         model = AutoModelForCausalLM.from_pretrained(
             "Techno03/gta-captioner",
-            device_map=device
+            device_map=device,
+            low_cpu_mem_usage=True,
         )
 
         processor = AutoProcessor.from_pretrained("microsoft/git-large")
@@ -50,7 +51,7 @@ if generate_button:
             max_length=128,
             do_sample=True,
             top_p=0.5,
-            # num_beams=3 if (torch.cuda.is_available() or torch.backends.mps.is_available()) else 1,
+            num_beams=3 if (torch.cuda.is_available() or torch.backends.mps.is_available()) else 1,
         )
 
     caption = st.session_state.processor.batch_decode(outputs, skip_special_tokens=True)[0]
