@@ -6,7 +6,12 @@ from PIL import Image
 
 def load_model():
     with st.spinner("Loading model..."):
-        model = AutoModelForCausalLM.from_pretrained("Techno03/gta-captioner")
+        model = AutoModelForCausalLM.from_pretrained(
+            "Techno03/gta-captioner",
+            torch_dtype=torch.float32,
+            low_cpu_mem_usage=False
+        )
+
         processor = AutoProcessor.from_pretrained("microsoft/git-large")
     
     if torch.cuda.is_available():
